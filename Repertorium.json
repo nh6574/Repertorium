@@ -1,0 +1,14 @@
+{
+  "id": "Repertorium",
+  "name": "N's Repertorium",
+  "display_name": "N's Repertorium",
+  "author": ["nh6574"],
+  "description": "hi",
+  "prefix": "repertorium",
+  "main_file": "Repertorium.lua",
+  "priority": 0,
+  "badge_colour": "1E7A0A",
+  "version": "0.1.0",
+  "no_marquee": true,
+  "dependencies": ["Steamodded (>=1.0.0~BETA-0711a)"]
+}
