@@ -5,7 +5,7 @@ NsRepertorium.config = SMODS.current_mod.config
 -- assert(SMODS.current_mod.lovely,
 --     "Lovely modules were not loaded.\nMake sure your N's Repertorium folder is not nested (there should be a bunch of files in the N's Repertorium folder and not just another folder).")
 
--- assert(SMODS.load_file("src/utils.lua"))()
+assert(SMODS.load_file("src/mod_info.lua"))()
 
 -- Jokers
 local joker_src = NFS.getDirectoryItems(SMODS.current_mod.path .. "src/jokers")
