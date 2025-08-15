@@ -1,4 +1,27 @@
 --- Erika Saionji
+SMODS.Atlas {
+    key = "001erika",
+    path = "erika.png",
+    px = 71,
+    py = 95
+}
+
+SMODS.Atlas {
+    key = "001erika_soul",
+    path = "erika_soul.png",
+    px = 111,
+    py = 135
+}
+
+SMODS.Sound {
+    key = "music_hoehoe",
+    path = "hoehoe.ogg",
+    sync = false,
+    pitch = 1,
+    select_music_track = function()
+        return G.STAGE == G.STAGES.RUN and G.GAME.repertorium_hoehoe and math.huge or false
+    end,
+}
 
 SMODS.current_mod.optional_features.post_trigger = true
 
@@ -11,6 +34,7 @@ local calc_keys = {
 
 SMODS.Joker {
     key = "erika",
+    atlas = "001erika",
     discovered = true,
     loc_vars = function(self, info_queue, card)
         return { vars = { localize(card.ability.extra.suit, "suits_plural"), card.ability.extra.mult, card.ability.extra.mult_mod, localize(card.ability.extra.suit, "suits_singular") } }
@@ -87,4 +111,333 @@ SMODS.Joker {
             end
         end
     end
+}
+
+--#region Animation
+
+local erika_pos = {
+    front = { x = 0, y = 1 },
+    jump = { x = 1, y = 1 },
+    side = { x = 2, y = 1 },
+    back = { x = 3, y = 1 },
+    empty = { x = 3, y = 0 },
+    front_mirrored = { x = 0, y = 2 },
+    jump_mirrored = { x = 1, y = 2 },
+    side_mirrored = { x = 2, y = 2 },
+    back_mirrored = { x = 3, y = 2 }
+}
+
+local erika_bg = {
+    regular = { x = 0, y = 0 },
+    poster = { x = 1, y = 0 },
+    empty = { x = 2, y = 0 },
+    lava = { x = 3, y = 0 },
+    space = { x = 4, y = 0 },
+}
+
+local pattern1 = {
+    { key = "jump",           frames = 4 },
+    { key = "front",          frames = 4 },
+    { key = "jump",           frames = 4 },
+    { key = "front",          frames = 4 },
+    { key = "jump",           frames = 4 },
+    { key = "front",          frames = 4 },
+    { key = "jump",           frames = 4 },
+    { key = "front",          frames = 4 },
+    { key = "jump",           frames = 4 },
+    { key = "front",          frames = 4 },
+    { key = "jump",           frames = 4 },
+    { key = "front",          frames = 4 },
+    { key = "empty",          frames = 2 },
+    { key = "side",           frames = 1 },
+    { key = "empty",          frames = 3 },
+    { key = "front",          frames = 1 },
+    { key = "empty",          frames = 3 },
+    { key = "side",           frames = 1 },
+    { key = "empty",          frames = 3 },
+    { key = "front",          frames = 1 },
+    { key = "empty",          frames = 1 },
+    { key = "jump",           frames = 4 },
+    { key = "front",          frames = 4 },
+    { key = "jump",           frames = 4 },
+    { key = "front",          frames = 4 },
+    { key = "jump",           frames = 4 },
+    { key = "front",          frames = 4 },
+    { key = "jump",           frames = 2 },
+    { key = "front",          frames = 2 },
+    { key = "side",           frames = 1 },
+    { key = "back",           frames = 1 },
+    { key = "side_mirrored",  frames = 1 },
+    { key = "front_mirrored", frames = 1 },
+    { key = "jump",           frames = 4 },
+    { key = "front",          frames = 4 },
+    { key = "jump",           frames = 4 },
+    { key = "front",          frames = 4 },
+    { key = "empty",          frames = 2 },
+    { key = "side",           frames = 1 },
+    { key = "empty",          frames = 3 },
+    { key = "front",          frames = 1 },
+    { key = "empty",          frames = 3 },
+    { key = "side",           frames = 1 },
+    { key = "empty",          frames = 3 },
+    { key = "front",          frames = 1 },
+    { key = "empty",          frames = 1 },
+    { key = "side",           frames = 1 },
+    { key = "empty",          frames = 1 },
+    { key = "back",           frames = 1 },
+    { key = "empty",          frames = 1 },
+    { key = "side_mirrored",  frames = 1 },
+    { key = "empty",          frames = 1 },
+    { key = "front_mirrored", frames = 1 },
+    { key = "empty",          frames = 1 },
+    { key = "side_mirrored",  frames = 1 },
+    { key = "empty",          frames = 1 },
+    { key = "back_mirrored",  frames = 1 },
+    { key = "empty",          frames = 1 },
+    { key = "side",           frames = 1 },
+    { key = "empty",          frames = 1 },
+    { key = "front",          frames = 1 },
+    { key = "empty",          frames = 1 },
+    { key = "jump",           frames = 2 },
+    { key = "front",          frames = 2 },
+    { key = "jump",           frames = 2 },
+    { key = "front",          frames = 2 },
+    { key = "empty",          frames = 4 },
+    { key = "side",           frames = 2 },
+    { key = "empty",          frames = 2 }
+}
+
+local pattern2 = {
+    { key = "jump",           frames = 4 },
+    { key = "front",          frames = 4 },
+    { key = "jump",           frames = 4 },
+    { key = "front",          frames = 4 },
+    { key = "jump",           frames = 4 },
+    { key = "front",          frames = 4 },
+    { key = "jump",           frames = 4 },
+    { key = "front",          frames = 4 },
+    { key = "jump",           frames = 4 },
+    { key = "front",          frames = 4 },
+    { key = "jump",           frames = 4 },
+    { key = "front",          frames = 4 },
+    { key = "jump",           frames = 4 },
+    { key = "front",          frames = 4 },
+    { key = "jump",           frames = 2 },
+    { key = "front",          frames = 2 },
+    { key = "jump",           frames = 2 },
+    { key = "front",          frames = 2 },
+    { key = "jump_mirrored",  frames = 4 },
+    { key = "front_mirrored", frames = 4 },
+    { key = "jump_mirrored",  frames = 4 },
+    { key = "front_mirrored", frames = 4 },
+    { key = "jump_mirrored",  frames = 4 },
+    { key = "front_mirrored", frames = 4 },
+    { key = "jump_mirrored",  frames = 4 },
+    { key = "front_mirrored", frames = 4 },
+    { key = "jump_mirrored",  frames = 4 },
+    { key = "front_mirrored", frames = 4 },
+    { key = "jump_mirrored",  frames = 4 },
+    { key = "front_mirrored", frames = 4 },
+    { key = "jump_mirrored",  frames = 4 },
+    { key = "front_mirrored", frames = 4 },
+    { key = "jump_mirrored",  frames = 2 },
+    { key = "front_mirrored", frames = 2 },
+    { key = "jump_mirrored",  frames = 2 },
+    { key = "front_mirrored", frames = 2 },
+    { key = "side",           frames = 12 },
+    { key = "front",          frames = 4 },
+    { key = "side_mirrored",  frames = 12 },
+    { key = "front",          frames = 4 },
+    { key = "side",           frames = 12 },
+    { key = "front",          frames = 4 },
+    { key = "side_mirrored",  frames = 12 },
+    { key = "front",          frames = 4 },
+    { key = "side",           frames = 8 },
+    { key = "empty",          frames = 8 },
+    { key = "side",           frames = 8 },
+    { key = "empty",          frames = 8 },
+    { key = "front",          frames = 2 },
+    { key = "side",           frames = 2 },
+    { key = "back",           frames = 2 },
+    { key = "side_mirrored",  frames = 2 },
+    { key = "front",          frames = 2 },
+    { key = "side",           frames = 2 },
+    { key = "back",           frames = 2 },
+    { key = "empty",          frames = 2 },
+    { key = "front",          frames = 2 },
+    { key = "side",           frames = 2 },
+    { key = "back",           frames = 2 },
+    { key = "side_mirrored",  frames = 2 },
+    { key = "front",          frames = 2 },
+    { key = "side",           frames = 2 },
+    { key = "back",           frames = 2 },
+    { key = "empty",          frames = 2 },
+    { key = "side_mirrored",  frames = 12 },
+    { key = "front",          frames = 4 },
+    { key = "side",           frames = 12 },
+    { key = "front",          frames = 4 },
+    { key = "side_mirrored",  frames = 12 },
+    { key = "front",          frames = 4 },
+    { key = "side",           frames = 12 },
+    { key = "front",          frames = 4 },
+    { key = "side",           frames = 8 },
+    { key = "empty",          frames = 8 },
+    { key = "side",           frames = 8 },
+    { key = "empty",          frames = 10 },
+    { key = "side_mirrored",  frames = 2 },
+    { key = "back_mirrored",  frames = 2 },
+    { key = "side",           frames = 2 },
+    { key = "front_mirrored", frames = 2 },
+    { key = "side_mirrored",  frames = 2 },
+    { key = "back_mirrored",  frames = 2 },
+    { key = "side",           frames = 2 },
+    { key = "empty",          frames = 2 },
+    { key = "side_mirrored",  frames = 2 },
+    { key = "back_mirrored",  frames = 2 },
+    { key = "side",           frames = 2 },
+    { key = "front_mirrored", frames = 2 },
+    { key = "side_mirrored",  frames = 2 },
+    { key = "back_mirrored",  frames = 2 },
+    { key = "side",           frames = 2 },
+    { key = "jump",           frames = 4 },
+    { key = "front",          frames = 4 },
+    { key = "side",           frames = 4 },
+    { key = "front",          frames = 4 },
+    { key = "jump",           frames = 4 },
+    { key = "front",          frames = 4 },
+    { key = "side",           frames = 4 },
+    { key = "front",          frames = 4 },
+    { key = "jump",           frames = 4 },
+    { key = "front",          frames = 4 },
+    { key = "side",           frames = 4 },
+    { key = "front",          frames = 4 },
+    { key = "jump",           frames = 4 },
+    { key = "front",          frames = 4 },
+    { key = "side",           frames = 4 },
+    { key = "front",          frames = 4 },
+    { key = "jump",           frames = 4 },
+    { key = "front",          frames = 4 },
+    { key = "side",           frames = 4 },
+    { key = "front",          frames = 4 },
+    { key = "jump",           frames = 4 },
+    { key = "front",          frames = 4 },
+    { key = "side",           frames = 4 },
+    { key = "front",          frames = 4 },
+    { key = "jump",           frames = 4 },
+    { key = "front",          frames = 4 },
+    { key = "side",           frames = 4 },
+    { key = "front",          frames = 4 },
+    { key = "jump",           frames = 4 },
+    { key = "front",          frames = 4 },
+    { key = "side",           frames = 4 },
+    { key = "front",          frames = 4 },
+    { key = "front",          frames = 8 },
+    { key = "side",           frames = 8 },
+    { key = "front",          frames = 1 },
+    { key = "side_mirrored",  frames = 1 },
+    { key = "back_mirrored",  frames = 1 },
+    { key = "side",           frames = 1 },
+    { key = "front",          frames = 2 },
+    { key = "empty",          frames = 6 },
+    { key = "side",           frames = 2 },
+    { key = "empty",          frames = 2 }
+}
+
+local erika_anim = {
+    pattern1,
+    pattern2,
+    { { key = "empty", frames = 156 } },
+    pattern2,
+    { { key = "empty", frames = 380 } },
+    pattern1,
+    pattern2,
+}
+
+local erika_anim_bg = {
+    [0] = "empty",
+    [288] = "lava",
+    [352] = "space",
+    [416] = "lava",
+    [480] = "space",
+    [544] = "empty",
+    [576] = "poster",
+    [608] = "empty",
+    [640] = "poster",
+    [672] = "empty",
+    [988] = "lava",
+    [1052] = "space",
+    [1116] = "lava",
+    [1180] = "space",
+    [1244] = "empty",
+    [1276] = "poster",
+    [1308] = "empty",
+    [1340] = "poster",
+    [1372] = "empty",
+}
+
+local function play_animation(sprite)
+    local pattern = erika_anim[sprite.current_pattern]
+    if sprite.current_frame <= #pattern and G.TIMERS.REAL >= sprite.next_time then
+        local anim = pattern[sprite.current_frame]
+        --print(G.repertorium_erika_soul.total_frames)
+        if erika_anim_bg[G.repertorium_erika_soul.total_frames] then
+            for _, joker in ipairs(SMODS.find_card("j_repertorium_erika")) do
+                joker.children.center:set_sprite_pos(erika_bg[erika_anim_bg[G.repertorium_erika_soul.total_frames]])
+            end
+        end
+
+        sprite:set_sprite_pos(erika_pos[anim.key])
+        G.repertorium_erika_soul.total_frames = G.repertorium_erika_soul.total_frames + anim.frames
+        sprite.next_time = G.TIMERS.REAL + anim.frames * 0.1
+
+        sprite.current_frame = sprite.current_frame + 1
+
+        if sprite.current_frame > #pattern then
+            sprite.current_pattern = sprite.current_pattern + 1
+            sprite.current_frame = 1
+            if sprite.current_pattern > #erika_anim then
+                sprite.current_frame = 3
+                sprite.current_pattern = 6
+            end
+        end
+    end
+end
+
+SMODS.DrawStep {
+    key = 'repertorium_erika',
+    order = 50,
+    func = function(card)
+        if card.config.center.key == "j_repertorium_erika" then
+            if not G.repertorium_erika_light then
+                G.repertorium_erika_light = Sprite(0, 0, G.CARD_W, G.CARD_H,
+                    G.ASSET_ATLAS["repertorium_001erika_soul"], { x = 2, y = 0 })
+            end
+            if not G.repertorium_erika_soul then
+                G.repertorium_erika_soul = Sprite(0, 0, G.CARD_W, G.CARD_H,
+                    G.ASSET_ATLAS["repertorium_001erika_soul"], { x = 0, y = 0 })
+            end
+
+            if not G.GAME.repertorium_hoehoe then
+                G.repertorium_erika_soul.current_frame = 1
+                G.repertorium_erika_soul.current_pattern = 1
+                G.repertorium_erika_soul.next_time = 0
+                G.repertorium_erika_soul.total_frames = 0
+                G.repertorium_erika_soul:set_sprite_pos({ x = math.floor(G.TIMERS.REAL * 7) % 2, y = 0 })
+            else
+                if not G.repertorium_erika_soul.current_frame or not G.repertorium_erika_soul.next_time then
+                    G.repertorium_erika_soul.current_frame = 1
+                    G.repertorium_erika_soul.current_pattern = 1
+                    G.repertorium_erika_soul.next_time = 0
+                    G.repertorium_erika_soul.total_frames = 0
+                end
+                play_animation(G.repertorium_erika_soul)
+            end
+
+            --G.repertorium_erika_light.role.draw_major = card
+            --G.repertorium_erika_light:draw_shader('dissolve', nil, nil, nil, card.children.center, 0, 0, -0.6, -0.3)
+            G.repertorium_erika_soul.role.draw_major = card
+            G.repertorium_erika_soul:draw_shader('dissolve', nil, nil, nil, card.children.center, 0, 0, -0.6, -0.3)
+        end
+    end,
+    conditions = { vortex = false, facing = 'front' },
 }
