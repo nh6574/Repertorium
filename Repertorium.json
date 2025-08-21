@@ -6,7 +6,7 @@
   "description": "hi",
   "prefix": "repertorium",
   "main_file": "Repertorium.lua",
-  "priority": 0,
+  "priority": 1001,
   "badge_colour": "1E7A0A",
   "version": "0.1.0",
   "no_marquee": true,
