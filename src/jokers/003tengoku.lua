@@ -1,7 +1,15 @@
 --- 天天天国地獄国 (Tententengokujigokugoku)
+SMODS.Atlas {
+    key = "003tengoku",
+    path = "003tengoku.png",
+    px = 71,
+    py = 95
+}
+
 
 SMODS.Joker {
     key = "tengoku",
+    atlas = "003tengoku",
     discovered = true,
     loc_vars = function(self, info_queue, card)
         local kino_loaded = not not next(SMODS.find_mod("kino"))

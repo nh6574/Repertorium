@@ -1,7 +1,15 @@
 --- For the Sake of Tomorrow #3
+SMODS.Atlas {
+    key = "002joe",
+    path = "002joe.png",
+    px = 71,
+    py = 95
+}
+
 
 SMODS.Joker {
     key = "joe",
+    atlas = "002joe",
     discovered = true,
     loc_vars = function(self, info_queue, card)
         return { vars = { card.ability.extra.mult, card.ability.extra.mult_mod, card.ability.extra.xmult, "#3" } }

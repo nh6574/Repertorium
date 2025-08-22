@@ -1,14 +1,14 @@
 --- Erika Saionji
 SMODS.Atlas {
     key = "001erika",
-    path = "erika.png",
+    path = "001erika.png",
     px = 71,
     py = 95
 }
 
 SMODS.Atlas {
     key = "001erika_soul",
-    path = "erika_soul.png",
+    path = "001erika_soul.png",
     px = 111,
     py = 135
 }

@@ -32,6 +32,6 @@ SMODS.Joker {
         }
     },
     calculate = function(self, card, context)
-        -- TBD
+
     end
 }

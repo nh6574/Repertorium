@@ -1,11 +1,11 @@
 --- MOD CONFIG
 
--- SMODS.Atlas({
---     key = "modicon",
---     path = "icon.png",
---     px = 32,
---     py = 32
--- })
+SMODS.Atlas({
+    key = "modicon",
+    path = "modicon.png",
+    px = 34,
+    py = 34
+})
 
 SMODS.current_mod.optional_features = { cardareas = {} }
 
