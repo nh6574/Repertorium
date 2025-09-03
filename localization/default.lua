@@ -5,15 +5,15 @@ return {
                 name = "Erika Saionji",
                 text = {
                     {
-                        "Scored {C:diamonds}#1#{} in played hand",
+                        "Scored {V:1}#1#{} in played hand",
                         "give {C:mult}+#2#{} Mult",
-                        "{C:inactive}(Suit changes every round){}"
+                        "{C:inactive}(Suit changes each round){}"
                     },
                     {
                         "If another Joker makes",
                         "a played card give score,",
                         "change this Joker's Mult by",
-                        "{C:mult}+#3#{} if it's a {C:diamonds}#4#{}",
+                        "{C:mult}+#3#{} if it's a {V:1}#4#{}",
                         "{C:mult}-#3#{} otherwise"
                     }
                 }
@@ -45,7 +45,8 @@ return {
                         "{C:blue}Angelic",
                         "Counts for scoring and gives {C:chips}+#4#{} Chips {C:inactive,s:0.85}(#1#% chance)",
                         "{C:attention}Enhances{} the card into a random enhancement {C:inactive,s:0.85}(#2#% chance)",
-                        "Copies the card and adds it to played hand {C:inactive,s:0.85}(#3#% chance)"
+                        "Copies the card and adds it to played hand",
+                        "but doesn't apply an effect to it {C:inactive,s:0.85}(#3#% chance)"
                     },
                     {
                         "{C:red}Devilish",
@@ -64,13 +65,15 @@ return {
                 text = {
                     {
                         "Applies one of these effects randomly for each played card,",
-                        "switching between {C:blue}Angelic{} and {C:red}Devilish{} effects intermittently"
+                        "switching between {C:blue}Angelic{} and {C:red}Devilish{} effects intermittently",
+                        "{C:inactive}(Currently {V:1}#8#{C:inactive})"
                     },
                     {
                         "{C:blue}Angelic",
                         "Puts {C:attention}#4#{} {C:blue}Angelic{} Counters on the card {C:inactive,s:0.85}(#1#% chance)",
                         "{C:attention}Enhances{} the card into a random enhancement {C:inactive,s:0.85}(#2#% chance)",
-                        "Copies the card and adds it to played hand {C:inactive,s:0.85}(#3#% chance)"
+                        "Copies the card and adds it to played hand",
+                        "but doesn't apply an effect to it {C:inactive,s:0.85}(#3#% chance)"
                     },
                     {
                         "{C:red}Devilish",
@@ -86,7 +89,7 @@ return {
                 text = {
                     {
                         "{X:mult,C:white}X#1#{} Mult for each {C:attention}Pair{}",
-                        "contained in played hand"
+                        "contained in scoring hand"
                     },
                     {
                         "{C:green}#2# in #3#{} chance to destroy",
@@ -101,7 +104,7 @@ return {
                 },
                 text = {
                     {
-                        "Put {C:attention}#1#{} {C:blue}Angelic{} Counter",
+                        "Puts {C:attention}#1#{} {C:blue}Angelic{} Counters",
                         "on the first card of each suit",
                         "played this round when scored"
                     }
@@ -114,7 +117,7 @@ return {
                 },
                 text = {
                     {
-                        "Put {C:attention}#1#{} {C:blue}Angelic{} Counter",
+                        "Puts {C:attention}#1#{} {C:blue}Angelic{} Counters",
                         "on the first card of each suit",
                         "played this round when scored"
                     },
@@ -138,6 +141,51 @@ return {
                     },
                 }
             },
+            j_repertorium_amanojaku = {
+                name = {
+                    "Amanojaku, Enemy of All",
+                },
+                text = {
+                    {
+                        "{C:attention}Blinds{} become {C:red}impossible{} to beat",
+                    },
+                    {
+                        "When {C:attention}Blind{} is selected,",
+                        "gains a random {C:attention}cheat item{}",
+                        "{C:inactive,s:0.9}(Resets when {C:attention,s:0.9}Boss Blind{C:inactive,s:0.9} is defeated){}"
+                    },
+                }
+            },
+        },
+        Counter = {
+            counter_repertorium_angelic = {
+                name = "Angelic Counter",
+                text = {
+                    "Gives {C:chips}+50{} Chips",
+                    "and counts for scoring"
+                }
+            },
+            counter_repertorium_devilish = {
+                name = "Devilish Counter",
+                text = {
+                    "Gives {C:mult}+5{} Mult",
+                    "but doesn't count for scoring"
+                }
+            },
+        }
+    },
+    misc = {
+        dictionary = {
+            k_repertorium_cross = "Cross Counter!",
+            k_repertorium_angelic = "Angelic",
+            k_repertorium_devilish = "Devilish",
+            k_repertorium_dead = "Dead!",
+            k_repertorium_alive = "Alive!",
+            k_repertorium_death = "Death!",
+            k_repertorium_birth = "Birth!",
+            k_repertorium_hell = "Hell!",
+            k_repertorium_heaven = "Heaven!",
+            k_repertorium_oops = "Oops!",
         }
     }
 }

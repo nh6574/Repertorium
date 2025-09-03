@@ -6,7 +6,6 @@ SMODS.Atlas {
     py = 95
 }
 
-
 SMODS.Joker {
     key = "joe",
     atlas = "002joe",
@@ -35,16 +34,35 @@ SMODS.Joker {
         if context.after and not context.blueprint then
             if card.ability.extra.mult <= 0 then
                 card.ability.extra.mult = 20
+                G.E_MANAGER:add_event(Event({
+                    func = function()
+                        card.children.center:set_sprite_pos({ x = 0, y = 0 })
+                        return true
+                    end
+                }))
                 return {
                     message = localize('k_reset'),
                     colour = G.C.RED
                 }
             end
             card.ability.extra.mult = card.ability.extra.mult - card.ability.extra.mult_mod
+            if card.ability.extra.mult <= 0 then
+                G.E_MANAGER:add_event(Event({
+                    func = function()
+                        card.children.center:set_sprite_pos({ x = 1, y = 0 })
+                        return true
+                    end
+                }))
+            end
             return {
                 message = localize { type = 'variable', key = 'a_mult_minus', vars = { card.ability.extra.mult_mod } },
                 colour = G.C.RED
             }
+        end
+    end,
+    set_ability = function(self, card, initial, delay_sprites)
+        if card.ability.extra.mult == 0 then
+            card.children.center:set_sprite_pos({ x = 1, y = 0 })
         end
     end
 }

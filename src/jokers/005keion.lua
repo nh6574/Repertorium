@@ -1,7 +1,14 @@
 --- 映画けいおん! (K-On! The Movie)
+SMODS.Atlas {
+    key = "005keion",
+    path = "005keion.png",
+    px = 71,
+    py = 95
+}
 
 SMODS.Joker {
     key = "keion",
+    atlas = "005keion",
     discovered = true,
     loc_vars = function(self, info_queue, card)
         local kino_loaded = not not next(SMODS.find_mod("kino"))
@@ -26,12 +33,39 @@ SMODS.Joker {
     pools, k_genre = { "Animation", "Comedy", "Musical" },
     config = {
         extra = {
-            counters = 1,
+            counters = 5,
             xchips = 0.5,
-            current_xchips = 1
+            current_xchips = 1,
+            suits = {}
         }
     },
     calculate = function(self, card, context)
+        if context.before then
+            for _, pcard in ipairs(context.scoring_hand) do
+                if not card.ability.extra.suits[pcard.base.suit] then
+                    pcard:bb_counter_apply("counter_repertorium_angelic", card.ability.extra.counters)
+                    card.ability.extra.suits[pcard.base.suit] = true
+                    card.ability.extra.suits[1] = (card.ability.extra.suits[1] or 0) + 1
+                end
+            end
 
+            if (card.ability.extra.suits[1] or 0) >= 5 then
+                card.ability.extra.current_xchips = card.ability.extra.current_xchips + card.ability.extra.xchips
+            end
+        end
+        if context.joker_main and card.ability.extra.current_xchips > 1 then
+            return {
+                xchips = card.ability.extra.current_xchips
+            }
+        end
+        if context.end_of_round and context.game_over == false and context.main_eval then
+            card.ability.extra.suits = {}
+        end
+    end,
+    remove_from_deck = function(self, card, from_debuff)
+        card.ability.extra.suits = {}
+    end,
+    in_pool = function(self, args)
+        return not not next(SMODS.find_mod("kino"))
     end
 }
