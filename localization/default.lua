@@ -162,14 +162,16 @@ return {
                 name = "Angelic Counter",
                 text = {
                     "Gives {C:chips}+50{} Chips",
-                    "and counts for scoring"
+                    "and counts for scoring",
+                    "{C:inactive}(Caps at 5){}"
                 }
             },
             counter_repertorium_devilish = {
                 name = "Devilish Counter",
                 text = {
                     "Gives {C:mult}+5{} Mult",
-                    "but doesn't count for scoring"
+                    "but doesn't count for scoring",
+                    "{C:inactive}(Caps at 5){}"
                 }
             },
         }

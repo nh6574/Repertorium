@@ -36,6 +36,8 @@ SMODS.Joker {
     atlas = "003tengoku",
     soul_pos = pos.empty,
     discovered = true,
+    rarity = 2,
+    cost = 7,
     loc_vars = function(self, info_queue, card)
         local kino_loaded = not not (Blockbuster or {}).Counters
         return {

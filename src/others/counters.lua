@@ -10,7 +10,7 @@ if (Blockbuster or {}).Counters then
         key = "angelic",
         atlas = 'counters',
         pos = { x = 0, y = 0 },
-        config = { cap = 99 },
+        config = { cap = 5 },
         discovered = true,
         pcard_only = true,
         calculate = function(self, card, context)
@@ -20,6 +20,7 @@ if (Blockbuster or {}).Counters then
                 }
             end
             if context.main_scoring and context.cardarea == G.play then
+                card:bb_increment_counter(-1)
                 return {
                     chips = 50
                 }
@@ -30,7 +31,7 @@ if (Blockbuster or {}).Counters then
         key = "devilish",
         atlas = 'counters',
         pos = { x = 1, y = 0 },
-        config = { cap = 99 },
+        config = { cap = 5 },
         discovered = true,
         pcard_only = true,
         calculate = function(self, card, context)
@@ -40,6 +41,7 @@ if (Blockbuster or {}).Counters then
                 }
             end
             if context.main_scoring and (context.cardarea == G.play or context.cardarea == "unscored") then
+                card:bb_increment_counter(-1)
                 return {
                     mult = 5
                 }

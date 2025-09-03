@@ -10,6 +10,8 @@ SMODS.Joker {
     key = "keion",
     atlas = "005keion",
     discovered = true,
+    rarity = 2,
+    cost = 5,
     loc_vars = function(self, info_queue, card)
         local kino_loaded = not not next(SMODS.find_mod("kino"))
         return {
@@ -29,13 +31,14 @@ SMODS.Joker {
         original_language = "jp",
         critic_score = 0,
         audience_score = 7.9,
+        cast = {},
     },
     pools, k_genre = { "Animation", "Comedy", "Musical" },
     config = {
         extra = {
             counters = 5,
             xchips = 0.5,
-            current_xchips = 1,
+            current_xchips_non = 1,
             suits = {}
         }
     },
@@ -50,12 +53,13 @@ SMODS.Joker {
             end
 
             if (card.ability.extra.suits[1] or 0) >= 5 then
-                card.ability.extra.current_xchips = card.ability.extra.current_xchips + card.ability.extra.xchips
+                card.ability.extra.current_xchips_non = card.ability.extra.current_xchips_non +
+                    card.ability.extra.xchips
             end
         end
-        if context.joker_main and card.ability.extra.current_xchips > 1 then
+        if context.joker_main and card.ability.extra.current_xchips_non > 1 then
             return {
-                xchips = card.ability.extra.current_xchips
+                xchips = card.ability.extra.current_xchips_non
             }
         end
         if context.end_of_round and context.game_over == false and context.main_eval then

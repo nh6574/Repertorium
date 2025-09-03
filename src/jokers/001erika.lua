@@ -36,6 +36,8 @@ SMODS.Joker {
     key = "erika",
     atlas = "001erika",
     discovered = true,
+    rarity = 2,
+    cost = 6,
     loc_vars = function(self, info_queue, card)
         return { vars = { localize(card.ability.extra.suit, "suits_plural"), card.ability.extra.mult, card.ability.extra.mult_mod, localize(card.ability.extra.suit, "suits_singular"), colours = { G.C.SUITS[card.ability.extra.suit] } } }
     end,

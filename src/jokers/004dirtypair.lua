@@ -10,6 +10,8 @@ SMODS.Joker {
     key = "dirtypair",
     discovered = true,
     atlas = "004dirtypair",
+    rarity = 3,
+    cost = 7,
     loc_vars = function(self, info_queue, card)
         local numerator, denominator = SMODS.get_probability_vars(card, 1, card.ability.extra.odds, self.key)
         return { vars = { card.ability.extra.xmult, numerator, denominator } }

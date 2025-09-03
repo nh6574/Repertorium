@@ -10,6 +10,8 @@ SMODS.Joker {
     key = "joe",
     atlas = "002joe",
     discovered = true,
+    rarity = 1,
+    cost = 4,
     loc_vars = function(self, info_queue, card)
         return { vars = { card.ability.extra.mult, card.ability.extra.mult_mod, card.ability.extra.xmult, "#3" } }
     end,
@@ -24,7 +26,9 @@ SMODS.Joker {
         if context.joker_main then
             if card.ability.extra.mult <= 0 then
                 return {
-                    xmult = card.ability.extra.xmult
+                    xmult = card.ability.extra.xmult,
+                    message = localize("k_repertorium_cross"),
+                    colour = G.C.RED
                 }
             end
             return {

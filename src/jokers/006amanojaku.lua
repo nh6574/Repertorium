@@ -10,6 +10,8 @@ SMODS.Joker {
     key = "amanojaku",
     atlas = "006amanojaku",
     discovered = true,
+    rarity = 4,
+    cost = 10,
     config = {
         extra = {
         }
