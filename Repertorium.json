@@ -3,7 +3,7 @@
   "name": "N's Repertorium",
   "display_name": "N's Repertorium",
   "author": ["nh6574"],
-  "description": "hi",
+  "description": "play JoyousSpring instead",
   "prefix": "repertorium",
   "main_file": "Repertorium.lua",
   "priority": 1001,

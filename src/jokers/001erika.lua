@@ -469,6 +469,7 @@ local function play_animation(sprite)
         if erika_anim_bg[sprite.total_frames] then
             sprite.current_bg = erika_anim_bg[sprite.total_frames]
             for _, joker in ipairs(SMODS.find_card("j_repertorium_erika")) do
+                -- TODO: Fix new erikas not having the new bg
                 joker.children.center:set_sprite_pos(erika_bg[erika_anim_bg[sprite.total_frames]])
             end
         end

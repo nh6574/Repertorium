@@ -1,5 +1,13 @@
 return {
     descriptions = {
+        Mod = {
+            Repertorium = {
+                name = "N's Repertorium",
+                text = {
+                    "mod where I put what I can't in {C:joy_mod}JoyousSpring"
+                }
+            }
+        },
         Joker = {
             j_repertorium_erika = {
                 name = "Erika Saionji",
@@ -105,8 +113,8 @@ return {
                 text = {
                     {
                         "Puts {C:attention}#1#{} {C:blue}Angelic{} Counters",
-                        "on the first card of each suit",
-                        "played this round when scored"
+                        "on the first played card of each suit",
+                        "scored this round"
                     }
                 }
             },
@@ -178,6 +186,8 @@ return {
     },
     misc = {
         dictionary = {
+            k_repertorium_discord = "(JoyousSpring's) Discord",
+            k_repertorium_github = "Github",
             k_repertorium_cross = "Cross Counter!",
             k_repertorium_angelic = "Angelic",
             k_repertorium_devilish = "Devilish",

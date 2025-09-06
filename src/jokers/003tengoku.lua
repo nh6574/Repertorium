@@ -6,6 +6,13 @@ SMODS.Atlas {
     py = 95
 }
 
+for _, key in ipairs { "alive", "dead", "birth", "death", "heaven", "hell" } do
+    SMODS.Sound {
+        key = "tengoku_" .. key,
+        path = "tengoku/" .. key .. ".ogg",
+    }
+end
+
 local pos = {
     alive = { x = 3, y = 0 },
     dead = { x = 3, y = 1 },
@@ -75,6 +82,7 @@ SMODS.Joker {
             local kino_loaded = not not (Blockbuster or {}).Counters
             local copied_cards = {}
             for _, pcard in ipairs(G.hand.highlighted) do
+                -- TODO: Fix effect with multiple copies
                 local poll = pseudorandom(card.config.center.key)
                 if poll <= card.ability.extra.chance_3 then
                     pcard.repertorium_tengoku_effect = card.ability.extra.angelic and "heaven" or "hell"
@@ -164,6 +172,7 @@ SMODS.Joker {
                 message = localize('k_repertorium_' .. context.other_card.repertorium_tengoku_effect),
                 colour = pos[context.other_card.repertorium_tengoku_effect].y == 0 and G.C.BLUE or G.C.RED,
                 message_card = card,
+                sound = "repertorium_tengoku_" .. context.other_card.repertorium_tengoku_effect,
                 extra = {
                     chips = not kino_loaded and context.other_card.repertorium_tengoku_effect == "alive" and
                         card.ability.extra.chips or nil,
