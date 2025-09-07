@@ -2,6 +2,8 @@
 
 Adds stuff.
 
+Better enjoyed with [Blockbuster: Counters](https://github.com/icyethics/Blockbuster-Counters). Also features [Balatro Goes Kino](https://github.com/icyethics/Kino) crossmod.
+
 ## Installation
 
 1. Install [Steamodded](https://github.com/Steamopollys/Steamodded) [(version >1.0.0)](https://github.com/Steamodded/smods/wiki)
