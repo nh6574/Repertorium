@@ -1,0 +1,89 @@
+[manifest]
+version = "0.1.0"
+dump_lua = true
+priority = 0
+
+# Disable winning the blind by score
+[[patches]]
+[patches.pattern]
+target = "game.lua"
+pattern = '''
+G.STATE = G.STATES.NEW_ROUND
+'''
+position = 'at'
+match_indent = true
+payload = '''
+
+if G.GAME.current_round.hands_left < 1 or not next(SMODS.find_card("j_repertorium_amanojaku")) then
+    G.STATE = G.STATES.NEW_ROUND
+else
+    G.STATE = G.STATES.DRAW_TO_HAND
+end
+'''
+
+[[patches]]
+[patches.pattern]
+target = "game.lua"
+pattern = '''
+G.STATE = G.STATES.NEW_ROUND
+G.STATE_COMPLETE = false
+'''
+position = 'at'
+match_indent = true
+payload = '''
+if not next(SMODS.find_card("j_repertorium_amanojaku")) then
+    G.STATE = G.STATES.NEW_ROUND
+    G.STATE_COMPLETE = false
+end
+'''
+
+# Gameover if held even if blind requirement has been beaten
+[[patches]]
+[patches.pattern]
+target = "functions/state_events.lua"
+pattern = '''
+game_over = false
+'''
+position = 'at'
+match_indent = true
+payload = '''
+if not next(SMODS.find_card("j_repertorium_amanojaku")) or (NsRepertorium or {}).debug_win then
+    game_over = false
+end
+'''
+
+[[patches]]
+[patches.pattern]
+target = "functions/state_events.lua"
+pattern = '''
+G.GAME.saved_text = nil
+'''
+position = 'after'
+match_indent = true
+payload = '''
+if next(SMODS.find_card("j_repertorium_amanojaku")) then
+    G.GAME.chips = 0
+end
+G.GAME.repertorium_win_by_amanojaku = nil
+local repertorium_win_by_amanojaku = NsRepertorium and NsRepertorium.get_amanojaku_win_condition()
+if repertorium_win_by_amanojaku then
+    game_over = false
+    G.GAME.saved_text = repertorium_win_by_amanojaku
+    G.GAME.repertorium_win_by_amanojaku = repertorium_win_by_amanojaku
+end
+'''
+
+[[patches]]
+[patches.pattern]
+target = "functions/state_events.lua"
+pattern = '''
+dollars = dollars + G.GAME.blind.dollars
+'''
+position = 'after'
+match_indent = true
+payload = '''
+elseif G.GAME.repertorium_win_by_amanojaku then
+    add_round_eval_row({dollars = G.GAME.blind.dollars, name='blind1', pitch = pitch, saved = true})
+    pitch = pitch + 0.06
+    dollars = dollars + G.GAME.blind.dollars
+'''

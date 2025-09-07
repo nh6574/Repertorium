@@ -33,7 +33,7 @@ SMODS.Joker {
             end
 
             return {
-                xmult = card.ability.extra.xmult * #context.poker_hands["Pair"]
+                xmult = card.ability.extra.xmult ^ #context.poker_hands["Pair"]
             }
         end
 
@@ -45,5 +45,33 @@ SMODS.Joker {
                 message_card = card
             }
         end
+    end,
+    joker_display_def = function(JokerDisplay)
+        ---@type JDJokerDefinition
+        return {
+            text = {
+                {
+                    border_nodes = {
+                        { text = "X" },
+                        { ref_table = "card.joker_display_values", ref_value = "x_mult", retrigger_type = "exp" },
+                    }
+                },
+            },
+            reminder_text = {
+                { text = "(" },
+                { ref_table = "card.joker_display_values", ref_value = "hand", colour = G.C.FILTER },
+                { text = ")" },
+            },
+            calc_function = function(card)
+                local x_mult = 1
+                local _, poker_hands, _ = JokerDisplay.evaluate_hand()
+                if poker_hands["Pair"] and next(poker_hands["Pair"]) then
+                    x_mult = card.ability.extra.xmult ^ #poker_hands["Pair"]
+                end
+                card.joker_display_values.x_mult = x_mult
+                card.joker_display_values.hand = localize("Pair", 'poker_hands')
+            end
+        }
     end
+
 }

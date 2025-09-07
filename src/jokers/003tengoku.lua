@@ -82,22 +82,28 @@ SMODS.Joker {
             local kino_loaded = not not (Blockbuster or {}).Counters
             local copied_cards = {}
             for _, pcard in ipairs(G.hand.highlighted) do
-                -- TODO: Fix effect with multiple copies
+                pcard.repertorium_tengoku_effect = pcard.repertorium_tengoku_effect or {}
+                card.repertorium_tengoku_count = #pcard.repertorium_tengoku_effect + 1
+
                 local poll = pseudorandom(card.config.center.key)
                 if poll <= card.ability.extra.chance_3 then
-                    pcard.repertorium_tengoku_effect = card.ability.extra.angelic and "heaven" or "hell"
+                    pcard.repertorium_tengoku_effect[card.repertorium_tengoku_count] = card.ability.extra.angelic and
+                        "heaven" or "hell"
                 elseif poll <= card.ability.extra.chance_2 then
-                    pcard.repertorium_tengoku_effect = card.ability.extra.angelic and "birth" or "death"
+                    pcard.repertorium_tengoku_effect[card.repertorium_tengoku_count] = card.ability.extra.angelic and
+                        "birth" or "death"
                 else
-                    pcard.repertorium_tengoku_effect = card.ability.extra.angelic and "alive" or "dead"
+                    pcard.repertorium_tengoku_effect[card.repertorium_tengoku_count] = card.ability.extra.angelic and
+                        "alive" or "dead"
                     if kino_loaded then
-                        pcard:bb_counter_apply(pcard.repertorium_tengoku_effect == "alive" and
+                        pcard:bb_counter_apply(
+                            pcard.repertorium_tengoku_effect[card.repertorium_tengoku_count] == "alive" and
                             "counter_repertorium_angelic" or "counter_repertorium_devilish", card.ability.extra.counters)
                     end
                 end
                 card.ability.extra.angelic = not card.ability.extra.angelic
 
-                if pcard.repertorium_tengoku_effect == "heaven" then
+                if pcard.repertorium_tengoku_effect[card.repertorium_tengoku_count] == "heaven" then
                     G.playing_card = (G.playing_card and G.playing_card + 1) or 1
                     local copy_card = copy_card(pcard, nil, nil, G.playing_card)
                     copy_card:add_to_deck()
@@ -135,7 +141,8 @@ SMODS.Joker {
 
         if context.before and context.main_eval and not context.blueprint then
             for _, pcard in ipairs(context.full_hand) do
-                if pcard.repertorium_tengoku_effect == "birth" then
+                local tengoku_effect = (pcard.repertorium_tengoku_effect or {})[card.repertorium_tengoku_count]
+                if tengoku_effect == "birth" then
                     pcard:set_ability(SMODS.poll_enhancement { guaranteed = true }, nil, true)
                     G.E_MANAGER:add_event(Event({
                         func = function()
@@ -144,7 +151,7 @@ SMODS.Joker {
                         end
                     }))
                 end
-                if pcard.repertorium_tengoku_effect == "hell" and pcard.ability.set == "Enhanced" then
+                if tengoku_effect == "hell" and pcard.ability.set == "Enhanced" then
                     pcard:set_ability("c_base", nil, true)
                     pcard.ability.perma_xmult = (pcard.ability.perma_xmult or 1) + card.ability.extra.perma_xmult
                     G.E_MANAGER:add_event(Event({
@@ -157,43 +164,66 @@ SMODS.Joker {
             end
         end
 
-        if context.modify_scoring_hand and context.other_card.repertorium_tengoku_effect and not (Blockbuster or {}).Counters then
+        if context.modify_scoring_hand and (context.other_card.repertorium_tengoku_effect or {})[card.repertorium_tengoku_count] and not (Blockbuster or {}).Counters then
+            local tengoku_effect = context.other_card.repertorium_tengoku_effect[card.repertorium_tengoku_count]
             return {
-                add_to_hand = context.other_card.repertorium_tengoku_effect == "alive" or nil,
-                remove_from_hand = context.other_card.repertorium_tengoku_effect == "dead" or nil,
+                add_to_hand = tengoku_effect == "alive" or nil,
+                remove_from_hand = tengoku_effect == "dead" or nil,
             }
         end
 
         if context.individual and (context.cardarea == G.play or context.cardarea == "unscored") and
-            context.other_card.repertorium_tengoku_effect then
+            (context.other_card.repertorium_tengoku_effect or {})[card.repertorium_tengoku_count] then
             local kino_loaded = not not (Blockbuster or {}).Counters
-            change_sprite(card, context.other_card.repertorium_tengoku_effect)
+            local tengoku_effect = context.other_card.repertorium_tengoku_effect[card.repertorium_tengoku_count]
+            change_sprite(card, tengoku_effect)
             return {
-                message = localize('k_repertorium_' .. context.other_card.repertorium_tengoku_effect),
-                colour = pos[context.other_card.repertorium_tengoku_effect].y == 0 and G.C.BLUE or G.C.RED,
+                message = localize('k_repertorium_' .. tengoku_effect),
+                colour = pos[tengoku_effect].y == 0 and G.C.BLUE or G.C.RED,
                 message_card = card,
-                sound = "repertorium_tengoku_" .. context.other_card.repertorium_tengoku_effect,
+                sound = "repertorium_tengoku_" .. tengoku_effect,
                 extra = {
-                    chips = not kino_loaded and context.other_card.repertorium_tengoku_effect == "alive" and
+                    chips = not kino_loaded and tengoku_effect == "alive" and
                         card.ability.extra.chips or nil,
-                    mult = not kino_loaded and context.other_card.repertorium_tengoku_effect == "dead" and
+                    mult = not kino_loaded and tengoku_effect == "dead" and
                         card.ability.extra.mult or nil,
-                    xmult = context.other_card.repertorium_tengoku_effect == "death" and card.ability.extra.xmult or nil,
+                    xmult = tengoku_effect == "death" and card.ability.extra.xmult or nil,
                 },
             }
         end
 
         if context.destroy_card and (context.cardarea == G.play or context.cardarea == "unscored") and
-            context.destroy_card.repertorium_tengoku_effect == "death" then
+            (context.destroy_card.repertorium_tengoku_effect or {})[card.repertorium_tengoku_count] == "death" then
             return {
                 remove = true
             }
         end
 
         if context.after then
+            card.repertorium_tengoku_count = nil
             for _, pcard in ipairs(context.full_hand) do
                 pcard.repertorium_tengoku_effect = nil
             end
         end
+    end,
+    joker_display_def = function(JokerDisplay)
+        ---@type JDJokerDefinition
+        return {
+            reminder_text = {
+                { text = "(" },
+                { ref_table = "card.joker_display_values", ref_value = "angelic", colour = G.C.BLUE },
+                { text = ")" },
+            },
+            calc_function = function(card)
+                card.joker_display_values.angelic = card.ability.extra.angelic and localize("k_repertorium_angelic") or
+                    localize("k_repertorium_devilish")
+            end,
+            style_function = function(card, text, reminder_text, extra)
+                if reminder_text and reminder_text.children[2] then
+                    reminder_text.children[2].config.colour = card.ability.extra.angelic and G.C.BLUE or G.C.RED
+                end
+                return false
+            end
+        }
     end
 }

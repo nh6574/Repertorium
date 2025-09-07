@@ -22,7 +22,7 @@ return {
                         "a played card give score,",
                         "change this Joker's Mult by",
                         "{C:mult}+#3#{} if it's a {V:1}#4#{}",
-                        "{C:mult}-#3#{} otherwise"
+                        "{C:mult}-#3#{} otherwise {C:inactive}(min. +1)"
                     }
                 }
             },
@@ -47,7 +47,8 @@ return {
                 text = {
                     {
                         "Applies one of these effects randomly for each played card,",
-                        "switching between {C:blue}Angelic{} and {C:red}Devilish{} effects intermittently"
+                        "switching between {C:blue}Angelic{} and {C:red}Devilish{} effects intermittently",
+                        "{C:inactive}(Currently {V:1}#8#{C:inactive})"
                     },
                     {
                         "{C:blue}Angelic",
@@ -182,6 +183,110 @@ return {
                     "{C:inactive}(Caps at 5){}"
                 }
             },
+        },
+        Other = {
+            repertorium_cheat_item = {
+                name = "Cheat Items",
+                text = {
+                    "Fulfill any of the conditions listed",
+                    "in any item to win the Blind",
+                    "Each Joker can only hold one of each kind"
+                }
+            },
+            repertorium_cheat_orb = {
+                name = "Bloodthirsty Yin-Yang Orb",
+                text = {
+                    "Get below {C:attention}#1#{} score to win",
+                    "after using all hands and",
+                    "playing only {C:attention}#2#",
+                    "{s:0.5} ",
+                    "{C:green}#3# in #4#{} chance to obtain",
+                    "this item when skipping a {C:attention}Blind{}"
+                }
+            },
+            repertorium_cheat_camera = {
+                name = "Tengu's Toy Camera",
+                text = {
+                    "Play a hand containing specific cards to win",
+                    "{s:0.85,C:attention}#2#",
+                    "{s:0.85,C:attention}#3#",
+                    "{s:0.85,C:attention}#4#",
+                    "{s:0.85,C:attention}#5#",
+                    "{s:0.85,C:attention}#6#",
+                    "{s:0.5} ",
+                    "{C:red}+#1#{} Discard"
+                }
+            },
+            repertorium_cheat_umbrella = {
+                name = "Gap Folding Umbrella",
+                text = {
+                    "Play hands containing {C:attention}Straight Flushes{}",
+                    "with every rank in your deck to win",
+                    "{s:0.5} ",
+                    "All {C:attention}Flushes{} and {C:attention}Straights{}",
+                    "can be made with 4 cards",
+                    "and allows {C:attention}Straights{} to be made",
+                    "with gaps of 1 rank and wrap around"
+                }
+            },
+            repertorium_cheat_mallet = {
+                name = "A Miracle Mallet Replica",
+                text = {
+                    "Get within {C:attention}#1#%{} of {C:attention}#2#{} to win",
+                    "{s:0.5} ",
+                    "{C:money}+$#3#{} when a Joker scores Chips or Mult"
+                }
+            },
+            repertorium_cheat_jizo = {
+                name = "Substitute Jizo",
+                text = {
+                    "Prevents Death.",
+                    "{C:inactive}(One time use) (#1#/1)",
+                    " ",
+                    "Can't be obtained unless",
+                    "the Joker holds an item"
+                }
+            },
+            repertorium_cheat_doll = {
+                name = "Cursed Decoy Doll",
+                text = {
+                    "Play {C:attention}#3#{} cards of rank {C:attention}#4#{}",
+                    "and {C:attention}#1#{} {C:attention}#2#{} to win",
+                    "{C:inactive}(#6#/#3# rank, #5#/#1# suit){}",
+                    "{s:0.5} ",
+                    "{C:attention}+#7#{} hand selection limit"
+                }
+            },
+            repertorium_cheat_bomb = {
+                name = "Four-Foot Magic Bomb",
+                text = {
+                    "Balances Chips and Mult",
+                    "Beat {C:attention}#1#{} score to win",
+                    "by playing only {C:attention}#2#",
+                    "{s:0.5} ",
+                    "Can't be obtained unless",
+                    "the Joker holds an item"
+                }
+            },
+            repertorium_cheat_lantern = {
+                name = "Ghastly Send-Off Lantern",
+                text = {
+                    "Play a {V:1}#1#{}, a {V:2}#2#{}",
+                    "and a {V:3}#3#{} to win",
+                    "{s:0.5} ",
+                    "{C:attention}+#4#{} hand size"
+                }
+            },
+            repertorium_cheat_fabric = {
+                name = "Nimble Fabric",
+                text = {
+                    "Poker Hand conditions are swapped randomly",
+                    "{C:inactive}(Contained hands behave normally)",
+                    "Play 3 {C:attention}#1#{} to win {C:inactive}(#3# left){}",
+                    "{s:0.5} ",
+                    "{C:blue}+#2#{} Hand"
+                }
+            },
         }
     },
     misc = {
@@ -198,6 +303,36 @@ return {
             k_repertorium_hell = "Hell!",
             k_repertorium_heaven = "Heaven!",
             k_repertorium_oops = "Oops!",
+            k_repertorium_impossible = "Impossible",
+            k_repertorium_any = "Any",
+            k_repertorium_get = "Get!",
+            k_repertorium_jizo_saved = "Substituted by the Jizo",
+            k_repertorium_orb_win = "Evaded Blind with Bloodthirsty Yin-Yang Orb",
+            k_repertorium_camera_win = "Captured Blind with Tengu's Toy Camera",
+            k_repertorium_umbrella_win = "Breached the gap with the Gap Folding Umbrella",
+            k_repertorium_mallet_win = "Reduced the Blind with the Miracle Mallet replica",
+            k_repertorium_doll_win = "Confused the Blind using the Cursed Decoy Doll",
+            k_repertorium_bomb_win = "Demolished the Blind using the Four-Foot Magic Bomb",
+            k_repertorium_lantern_win = "Passed through the Blind with the Ghastly Send-Off Lantern",
+            k_repertorium_fabric_win = "Hid from the Blind using the Nimble Fabric",
+            k_repertorium_none_win = "Refused to lose to the Blind",
+        },
+        quips = {
+            repertorium_erika_win = {
+                "I couldn't have done it",
+                "without my song",
+                "and my friends!"
+            },
+            repertorium_amanojaku_loss = {
+                "Ugh, they're getting stronger",
+                "Maybe I should try",
+                "leveling up my new items, too... "
+            },
+            repertorium_amanojaku_win = {
+                "Outta the way!",
+                "The (soon to be) great Amanojaku",
+                "is passing through!"
+            },
         }
     }
 }

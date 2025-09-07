@@ -25,17 +25,13 @@ SMODS.Sound {
 
 SMODS.current_mod.optional_features.post_trigger = true
 
-local calc_keys = {
-    'chips', 'h_chips', 'chip_mod',
-    'mult', 'h_mult', 'mult_mod',
-    'x_chips', 'xchips', 'Xchip_mod',
-    'x_mult', 'Xmult', 'xmult', 'x_mult_mod', 'Xmult_mod',
-}
+local calc_keys = NsRepertorium.calc_keys
 
 SMODS.Joker {
     key = "erika",
     atlas = "001erika",
     discovered = true,
+    blueprint_compat = true,
     rarity = 2,
     cost = 6,
     loc_vars = function(self, info_queue, card)
@@ -43,7 +39,7 @@ SMODS.Joker {
     end,
     config = {
         extra = {
-            mult = 0,
+            mult = 1,
             mult_mod = 1,
             suit = 'Diamonds'
         }
@@ -58,8 +54,10 @@ SMODS.Joker {
             if context.post_trigger and context.other_card ~= card and context.other_card.ability.set == "Joker" and
                 context.other_context.individual and context.other_ret.jokers then
                 for _, key in ipairs(calc_keys) do
-                    if context.other_ret.jokers[key] and
-                        context.other_ret.jokers[key] > (key:sub(1, 1):lower() == "x" and 1 or 0) then
+                    local is_hyper = key:sub(1, 1):lower() == "e" or key:sub(1, 2):lower() == "hy"
+                    local is_x = key:sub(1, 1):lower() == "x"
+                    if context.other_ret.jokers[key] and (is_hyper or
+                            to_big(context.other_ret.jokers[key]) > to_big(is_x and 1 or 0)) then
                         if context.other_context.other_card:is_suit(card.ability.extra.suit) then
                             card.ability.extra.mult = card.ability.extra.mult + card.ability.extra.mult_mod
                             return {
@@ -69,7 +67,7 @@ SMODS.Joker {
                             }
                         else
                             local prev_mult = card.ability.extra.mult
-                            card.ability.extra.mult = math.max(0, card.ability.extra.mult - card.ability.extra.mult_mod)
+                            card.ability.extra.mult = math.max(1, card.ability.extra.mult - card.ability.extra.mult_mod)
                             if prev_mult > card.ability.extra.mult then
                                 return {
                                     message = localize { type = 'variable', key = 'a_mult_minus', vars = { card.ability.extra.mult_mod } },
@@ -112,6 +110,41 @@ SMODS.Joker {
                 card.ability.extra.suit = pcard.base.suit
             end
         end
+    end,
+    joker_display_def = function(JokerDisplay)
+        ---@type JDJokerDefinition
+        return {
+            text = {
+                { text = "+", },
+                { ref_table = "card.ability.extra", ref_value = "mult", retrigger_type = "mult" },
+            },
+            text_config = { colour = G.C.MULT },
+            reminder_text = {
+                { text = "(" },
+                { ref_table = "card.joker_display_values", ref_value = "suit", colour = G.C.FILTER },
+                { text = ")" },
+            },
+            calc_function = function(card)
+                local count = 0
+                local text, _, scoring_hand = JokerDisplay.evaluate_hand()
+                if text ~= 'Unknown' then
+                    for _, scoring_card in pairs(scoring_hand) do
+                        if scoring_card:is_suit(card.ability.extra.suit) then
+                            count = count +
+                                JokerDisplay.calculate_card_triggers(scoring_card, scoring_hand)
+                        end
+                    end
+                end
+                card.joker_display_values.mult = card.ability.extra.mult * count
+                card.joker_display_values.suit = localize(card.ability.extra.suit, 'suits_plural')
+            end,
+            style_function = function(card, text, reminder_text, extra)
+                if reminder_text and reminder_text.children[2] then
+                    reminder_text.children[2].config.colour = lighten(G.C.SUITS[card.ability.extra.suit], 0.35)
+                end
+                return false
+            end
+        }
     end
 }
 
@@ -463,15 +496,14 @@ local function play_animation(sprite)
         sprite.next_frame = G.TIMERS.REAL + 0.1
         sprite.frame_tick = sprite.frame_tick + 1
     end
+    for _, joker in ipairs(SMODS.find_card("j_repertorium_erika")) do
+        joker.children.center:set_sprite_pos(erika_bg[sprite.current_bg or "empty"])
+    end
     if sprite.current_frame <= #pattern and G.TIMERS.REAL >= sprite.next_time then
         local anim = pattern[sprite.current_frame]
         --print(G.repertorium_erika_soul.total_frames)
         if erika_anim_bg[sprite.total_frames] then
             sprite.current_bg = erika_anim_bg[sprite.total_frames]
-            for _, joker in ipairs(SMODS.find_card("j_repertorium_erika")) do
-                -- TODO: Fix new erikas not having the new bg
-                joker.children.center:set_sprite_pos(erika_bg[erika_anim_bg[sprite.total_frames]])
-            end
         end
 
         if sprite.current_frame == 1372 then
@@ -620,4 +652,17 @@ SMODS.DrawStep {
         end
     end,
     conditions = { vortex = false, facing = 'front' },
+}
+
+SMODS.JimboQuip {
+    key = "erika_win",
+    type = 'win',
+    filter = function(self, type)
+        if next(SMODS.find_card('j_repertorium_erika')) then
+            return true, { weight = 10 }
+        end
+    end,
+    extra = {
+        center = "j_repertorium_erika"
+    }
 }

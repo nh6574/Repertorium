@@ -10,6 +10,7 @@ SMODS.Joker {
     key = "joe",
     atlas = "002joe",
     discovered = true,
+    blueprint_compat = true,
     rarity = 1,
     cost = 4,
     loc_vars = function(self, info_queue, card)
@@ -68,5 +69,39 @@ SMODS.Joker {
         if card.ability.extra.mult == 0 then
             card.children.center:set_sprite_pos({ x = 1, y = 0 })
         end
+    end,
+    joker_display_def = function(JokerDisplay)
+        ---@type JDJokerDefinition
+        return {
+            text = {
+                {
+                    border_nodes = {
+                        { ref_table = "card.joker_display_values", ref_value = "x_symbol" },
+                        { ref_table = "card.joker_display_values", ref_value = "x_mult",  retrigger_type = "exp" },
+                    }
+                },
+                { ref_table = "card.joker_display_values", ref_value = "plus_symbol", colour = G.C.MULT },
+                { ref_table = "card.joker_display_values", ref_value = "mult",        retrigger_type = "mult", colour = G.C.MULT }
+            },
+            calc_function = function(card)
+                local in_play = not not next(G.play.cards)
+                card.joker_display_values.x_symbol = in_play and card.joker_display_values.x_symbol or
+                    (card.ability.extra.mult <= 0 and 'X' or '')
+                card.joker_display_values.x_mult = in_play and card.joker_display_values.x_mult or
+                    (card.ability.extra.mult <= 0 and card.ability.extra.xmult or '')
+                card.joker_display_values.plus_symbol = in_play and card.joker_display_values.plus_symbol or
+                    (card.ability.extra.mult > 0 and '+' or '')
+                card.joker_display_values.mult = in_play and card.joker_display_values.mult or
+                    (card.ability.extra.mult > 0 and card.ability.extra.mult or '')
+            end,
+            style_function = function(card, text, reminder_text, extra)
+                if text and text.children[1] then
+                    local in_play = not not next(G.play.cards)
+                    text.children[1].config.colour = in_play and text.children[1].config.colour or
+                        (card.ability.extra.mult <= 0 and G.C.MULT or G.C.CLEAR)
+                end
+                return false
+            end
+        }
     end
 }

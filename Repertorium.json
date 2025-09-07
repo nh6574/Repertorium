@@ -10,5 +10,5 @@
   "badge_colour": "1E7A0A",
   "version": "0.1.0",
   "no_marquee": true,
-  "dependencies": ["Steamodded (>=1.0.0~BETA-0711a)"]
+  "dependencies": ["Steamodded (>=1.0.0~BETA-0827c)"]
 }
