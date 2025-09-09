@@ -47,7 +47,7 @@ return {
                 text = {
                     {
                         "Applies one of these effects randomly for each played card,",
-                        "switching between {C:blue}Angelic{} and {C:red}Devilish{} effects intermittently",
+                        "alternating between {C:blue}Angelic{} and {C:red}Devilish{}",
                         "{C:inactive}(Currently {V:1}#8#{C:inactive})"
                     },
                     {
@@ -74,7 +74,7 @@ return {
                 text = {
                     {
                         "Applies one of these effects randomly for each played card,",
-                        "switching between {C:blue}Angelic{} and {C:red}Devilish{} effects intermittently",
+                        "alternating between {C:blue}Angelic{} and {C:red}Devilish{}",
                         "{C:inactive}(Currently {V:1}#8#{C:inactive})"
                     },
                     {
