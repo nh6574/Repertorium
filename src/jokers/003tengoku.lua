@@ -20,7 +20,7 @@ local pos = {
     death = { x = 2, y = 1 },
     heaven = { x = 1, y = 0 },
     hell = { x = 1, y = 1 },
-    empty = { x = 0, y = 0 }
+    empty = { x = 0, y = 1 }
 }
 
 local change_sprite = function(card, effect)
@@ -41,7 +41,7 @@ end
 SMODS.Joker {
     key = "tengoku",
     atlas = "003tengoku",
-    soul_pos = pos.empty,
+    soul_pos = { x = 0, y = 1 },
     discovered = true,
     rarity = 2,
     cost = 7,
