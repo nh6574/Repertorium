@@ -1,0 +1,7 @@
+{
+  "name": "N's Repertorium",
+  "version_number": "0.1.1",
+  "website_url": "https://github.nh6574.com/Repertorium",
+  "description": "Adds some Jokers. Play JoyousSpring instead.",
+  "dependencies": ["Thunderstore-lovely-0.8.0"]
+}
