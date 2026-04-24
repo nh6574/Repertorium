@@ -1,12 +1,5 @@
 --- MOD CONFIG
 
-SMODS.Atlas({
-    key = "modicon",
-    path = "modicon.png",
-    px = 34,
-    py = 34
-})
-
 loc_colour()
 G.ARGS.LOC_COLOURS.joy_mod = G.ARGS.LOC_COLOURS.joy_mod or HEX("F4A6C7")
 

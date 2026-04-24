@@ -11,5 +11,6 @@
   "version": "0.1.1",
   "no_marquee": true,
   "dependencies": ["Steamodded (>=1.0.0~BETA-0827c)"],
-  "allow_redistribution": true
+  "allow_redistribution": true,
+  "icon_path": "modicon.png"
 }
