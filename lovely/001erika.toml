@@ -1,0 +1,26 @@
+[manifest]
+version = "0.1.0"
+dump_lua = true
+priority = 0
+
+# Sound syncing stuff gotten from ellejokers <3
+[[patches]]
+[patches.pattern]
+target = "engine/sound_manager.lua"
+pattern = "SMODS_Sounds = {}"
+position = "after"
+payload = '''
+REPERTORIUM_POS_CHANNEL = love.thread.getChannel('repertorium_pos_channel')
+'''
+match_indent = true
+
+[[patches]]
+[patches.pattern]
+target = "engine/sound_manager.lua"
+pattern = "elseif request.type == 'sound_source' then"
+position = "before"
+payload = '''
+elseif request.type == 'repertorium_get_source' then
+	REPERTORIUM_POS_CHANNEL:push(SOURCES[current_track][1])
+'''
+match_indent = true

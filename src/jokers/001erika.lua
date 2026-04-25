@@ -23,6 +23,28 @@ SMODS.Sound {
     end,
 }
 
+local pos_channel = love.thread.getChannel("repertorium_pos_channel")
+local req_channel = love.thread.getChannel("sound_request")
+
+NsRepertorium.get_sound_source = function()
+    req_channel:push { type = "repertorium_get_source" }
+    return pos_channel:demand()
+end
+
+local get_song_pos = function()
+    local source = NsRepertorium.get_sound_source()
+    if not source or not source.sound or source.sound_code ~= "repertorium_music_hoehoe" then return end
+    source = source.sound
+    return source:tell()
+end
+
+local get_song_duration = function()
+    local source = NsRepertorium.get_sound_source()
+    if not source or not source.sound or source.sound_code ~= "repertorium_music_hoehoe" then return end
+    source = source.sound
+    return source:getDuration()
+end
+
 SMODS.current_mod.optional_features.post_trigger = true
 
 local calc_keys = NsRepertorium.calc_keys
@@ -238,9 +260,11 @@ local pattern1 = {
     { key = "jump",           frames = 2 },
     { key = "front",          frames = 2 },
     { key = "empty",          frames = 4 },
-    { key = "side",           frames = 2 },
+    { key = "side",           frames = 2, ease_y = -0.4, y_frames = 1 },
     { key = "empty",          frames = 2 }
 }
+
+local offset_unit = 0.2
 
 local pattern2 = {
     { key = "jump",           frames = 4 },
@@ -287,27 +311,27 @@ local pattern2 = {
     { key = "front",          frames = 4 },
     { key = "side_mirrored",  frames = 12 },
     { key = "front",          frames = 4 },
-    { key = "side",           frames = 8 },
+    { key = "side",           frames = 8,  offset_x = offset_unit * 3,  offset_y = -0.4 },
     { key = "empty",          frames = 8 },
-    { key = "side",           frames = 8 },
+    { key = "side",           frames = 8,  offset_x = -offset_unit * 2, offset_y = 0 },
     { key = "empty",          frames = 8 },
-    { key = "front",          frames = 2 },
-    { key = "side",           frames = 2 },
-    { key = "back",           frames = 2 },
-    { key = "side_mirrored",  frames = 2 },
-    { key = "front",          frames = 2 },
-    { key = "side",           frames = 2 },
-    { key = "back",           frames = 2 },
+    { key = "front",          frames = 2,  offset_x = -offset_unit * 3, offset_y = -0.05 },
+    { key = "side",           frames = 2,  offset_x = -offset_unit * 2 },
+    { key = "back",           frames = 2,  offset_x = -offset_unit },
+    { key = "side_mirrored",  frames = 2,  offset_x = 0 },
+    { key = "front",          frames = 2,  offset_x = offset_unit },
+    { key = "side",           frames = 2,  offset_x = offset_unit * 2 },
+    { key = "back",           frames = 2,  offset_x = offset_unit * 3 },
     { key = "empty",          frames = 2 },
-    { key = "front",          frames = 2 },
-    { key = "side",           frames = 2 },
-    { key = "back",           frames = 2 },
-    { key = "side_mirrored",  frames = 2 },
-    { key = "front",          frames = 2 },
-    { key = "side",           frames = 2 },
-    { key = "back",           frames = 2 },
+    { key = "front",          frames = 2,  offset_x = -offset_unit * 3 },
+    { key = "side",           frames = 2,  offset_x = -offset_unit * 2 },
+    { key = "back",           frames = 2,  offset_x = -offset_unit },
+    { key = "side_mirrored",  frames = 2,  offset_x = 0 },
+    { key = "front",          frames = 2,  offset_x = offset_unit },
+    { key = "side",           frames = 2,  offset_x = offset_unit * 2 },
+    { key = "back",           frames = 2,  offset_x = offset_unit * 3 },
     { key = "empty",          frames = 2 },
-    { key = "side_mirrored",  frames = 12 },
+    { key = "side_mirrored",  frames = 12, offset_x = 0 },
     { key = "front",          frames = 4 },
     { key = "side",           frames = 12 },
     { key = "front",          frames = 4 },
@@ -315,26 +339,26 @@ local pattern2 = {
     { key = "front",          frames = 4 },
     { key = "side",           frames = 12 },
     { key = "front",          frames = 4 },
-    { key = "side",           frames = 8 },
+    { key = "side",           frames = 8,  offset_x = offset_unit * 2 },
     { key = "empty",          frames = 8 },
-    { key = "side",           frames = 8 },
+    { key = "side",           frames = 8,  offset_x = -offset_unit * 3, offset_y = -0.4 },
     { key = "empty",          frames = 10 },
-    { key = "side_mirrored",  frames = 2 },
-    { key = "back_mirrored",  frames = 2 },
-    { key = "side",           frames = 2 },
-    { key = "front_mirrored", frames = 2 },
-    { key = "side_mirrored",  frames = 2 },
-    { key = "back_mirrored",  frames = 2 },
-    { key = "side",           frames = 2 },
+    { key = "side_mirrored",  frames = 2,  offset_x = offset_unit * 3,  offset_y = 0 },
+    { key = "back_mirrored",  frames = 2,  offset_x = offset_unit * 2 },
+    { key = "side",           frames = 2,  offset_x = offset_unit },
+    { key = "front_mirrored", frames = 2,  offset_x = 0 },
+    { key = "side_mirrored",  frames = 2,  offset_x = -offset_unit },
+    { key = "back_mirrored",  frames = 2,  offset_x = -offset_unit * 2 },
+    { key = "side",           frames = 2,  offset_x = -offset_unit * 3 },
     { key = "empty",          frames = 2 },
-    { key = "side_mirrored",  frames = 2 },
-    { key = "back_mirrored",  frames = 2 },
-    { key = "side",           frames = 2 },
-    { key = "front_mirrored", frames = 2 },
-    { key = "side_mirrored",  frames = 2 },
-    { key = "back_mirrored",  frames = 2 },
-    { key = "side",           frames = 2 },
-    { key = "jump",           frames = 4 },
+    { key = "side_mirrored",  frames = 2,  offset_x = offset_unit * 3 },
+    { key = "back_mirrored",  frames = 2,  offset_x = offset_unit * 2 },
+    { key = "side",           frames = 2,  offset_x = offset_unit },
+    { key = "front_mirrored", frames = 2,  offset_x = 0 },
+    { key = "side_mirrored",  frames = 2,  offset_x = -offset_unit },
+    { key = "back_mirrored",  frames = 2,  offset_x = -offset_unit * 2 },
+    { key = "side",           frames = 2,  offset_x = -offset_unit * 3 },
+    { key = "jump",           frames = 4,  offset_x = 0 },
     { key = "front",          frames = 4 },
     { key = "side",           frames = 4 },
     { key = "front",          frames = 4 },
@@ -374,7 +398,7 @@ local pattern2 = {
     { key = "side",           frames = 1 },
     { key = "front",          frames = 2 },
     { key = "empty",          frames = 6 },
-    { key = "side",           frames = 2 },
+    { key = "side",           frames = 2,  ease_y = -0.4,               y_frames = 1 },
     { key = "empty",          frames = 2 }
 }
 
@@ -383,7 +407,7 @@ local erika_anim = {
     pattern2,
     { { key = "empty", frames = 156 } },
     pattern2,
-    { { key = "empty", frames = 380 } },
+    { { key = "empty", frames = 386 } },
     pattern1,
     pattern2,
 }
@@ -486,33 +510,61 @@ local erika_lyrics = {
     [2492] = { "", "" },
 }
 
+local hide_light_frame = 1403
+
 local function play_animation(sprite)
+    local sound_pos = get_song_pos()
+    if sprite.sound_pos and sound_pos < sprite.sound_pos and sound_pos < 5 then
+        local duration = get_song_duration()
+        sprite.next_frame = sprite.next_frame - duration
+        sprite.next_time = sprite.next_time - duration
+    end
+    sprite.sound_pos = sound_pos
     local pattern = erika_anim[sprite.current_pattern]
     if erika_lyrics[sprite.frame_tick] then
         G.repertorium_erika_lyrics_eng = erika_lyrics[sprite.frame_tick][1]
         G.repertorium_erika_lyrics_jp = erika_lyrics[sprite.frame_tick][2]
     end
-    if G.TIMERS.REAL >= sprite.next_frame then
-        sprite.next_frame = G.TIMERS.REAL + 0.1
+    if sound_pos >= sprite.next_frame then
+        sprite.next_frame = sprite.next_frame + 0.1
         sprite.frame_tick = sprite.frame_tick + 1
     end
     for _, joker in ipairs(SMODS.find_card("j_repertorium_erika")) do
         joker.children.center:set_sprite_pos(erika_bg[sprite.current_bg or "empty"])
     end
-    if sprite.current_frame <= #pattern and G.TIMERS.REAL >= sprite.next_time then
+    if sprite.current_frame <= #pattern and sound_pos >= sprite.next_time then
         local anim = pattern[sprite.current_frame]
         --print(G.repertorium_erika_soul.total_frames)
         if erika_anim_bg[sprite.total_frames] then
             sprite.current_bg = erika_anim_bg[sprite.total_frames]
         end
 
-        if sprite.current_frame == 1372 then
+        if sprite.frame_tick >= hide_light_frame then
             sprite.hide_light = true
+            sprite.offset_y = 0
+            sprite.offset_x = 0
+        else
+            if anim.offset_y then sprite.offset_y = anim.offset_y end
+            if anim.offset_x then sprite.offset_x = anim.offset_x end
         end
 
         sprite:set_sprite_pos(erika_pos[anim.key])
+
         sprite.total_frames = sprite.total_frames + anim.frames
-        sprite.next_time = G.TIMERS.REAL + anim.frames * 0.1
+        sprite.next_time = sprite.next_time + anim.frames * 0.1
+
+        if anim.ease_y and sprite.frame_tick < hide_light_frame then
+            sprite.offset_y = anim.ease_y
+            G.E_MANAGER:add_event(Event({
+                trigger = "ease",
+                ease = "outquad",
+                delay = (anim.y_frames or anim.frames) * 0.1,
+                ref_table = sprite,
+                ref_value = "offset_y",
+                ease_to = 0,
+                timer = "REAL"
+            }))
+        end
 
         sprite.current_frame = sprite.current_frame + 1
 
@@ -520,7 +572,7 @@ local function play_animation(sprite)
             sprite.current_pattern = sprite.current_pattern + 1
             sprite.current_frame = 1
             if sprite.current_pattern > #erika_anim then
-                sprite.current_frame = 3
+                sprite.current_frame = 2
                 sprite.current_pattern = 6
             end
         end
@@ -548,6 +600,7 @@ SMODS.DrawStep {
                 G.repertorium_erika_soul.total_frames = 0
                 G.repertorium_erika_soul.frame_tick = 0
                 G.repertorium_erika_soul.next_frame = 0
+                G.repertorium_erika_soul.sound_pos = 0
                 card.children.center:set_sprite_pos(erika_bg.regular)
                 G.repertorium_erika_soul:set_sprite_pos({ x = math.floor(G.TIMERS.REAL * 7) % 2, y = 0 })
                 G.repertorium_erika_soul:set_sprite_pos({ x = math.floor(G.TIMERS.REAL * 7) % 2, y = 0 })
@@ -559,7 +612,8 @@ SMODS.DrawStep {
                     G.repertorium_erika_soul.total_frames = 0
                     G.repertorium_erika_soul.current_bg = "empty"
                     G.repertorium_erika_soul.frame_tick = 0
-                    G.repertorium_erika_soul.next_frame = G.TIMERS.REAL
+                    G.repertorium_erika_soul.next_frame = 0
+                    G.repertorium_erika_soul.sound_pos = 0
                 end
                 if not G.repertorium_lyrics_box then
                     G.repertorium_erika_lyrics_eng = ""
@@ -648,11 +702,16 @@ SMODS.DrawStep {
             end
 
             G.repertorium_erika_soul.role.draw_major = card
-            G.repertorium_erika_soul:draw_shader('dissolve', nil, nil, nil, card.children.center, 0, 0, -0.6, -0.3)
+            local offset_y = G.repertorium_erika_soul.offset_y or 0
+            local offset_x = G.repertorium_erika_soul.offset_x or 0
+            G.repertorium_erika_soul:draw_shader('dissolve', nil, nil, nil, card.children.center, 0, 0, -0.6 + offset_x,
+                -0.3 + offset_y)
         end
     end,
     conditions = { vortex = false, facing = 'front' },
 }
+
+--#endregion
 
 SMODS.JimboQuip {
     key = "erika_win",
