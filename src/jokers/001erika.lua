@@ -72,6 +72,23 @@ SMODS.Joker {
                 mult = card.ability.extra.mult
             }
         end
+        if context.after then
+            local count = 0
+            for _, joker in ipairs(G.jokers.cards) do
+                if joker.repertorium_hoehoe then
+                    count = count + 1
+                end
+                joker.repertorium_hoehoe = nil
+            end
+            if count >= 4 then
+                G.E_MANAGER:add_event(Event({
+                    func = function()
+                        G.GAME.repertorium_hoehoe = true
+                        return true
+                    end
+                }))
+            end
+        end
         if not context.blueprint then
             if context.post_trigger and context.other_card ~= card and context.other_card.ability.set == "Joker" and
                 context.other_context.individual and context.other_ret.jokers then
@@ -82,9 +99,10 @@ SMODS.Joker {
                             to_big(context.other_ret.jokers[key]) > to_big(is_x and 1 or 0)) then
                         if context.other_context.other_card:is_suit(card.ability.extra.suit) then
                             card.ability.extra.mult = card.ability.extra.mult + card.ability.extra.mult_mod
+                            context.other_card.repertorium_hoehoe = true
                             return {
                                 message = localize { type = 'variable', key = 'a_mult', vars = { card.ability.extra.mult_mod } },
-                                colour = G.C.MULT,
+                                colour = G.C.FILTER,
                                 message_card = card
                             }
                         else
@@ -93,7 +111,7 @@ SMODS.Joker {
                             if prev_mult > card.ability.extra.mult then
                                 return {
                                     message = localize { type = 'variable', key = 'a_mult_minus', vars = { card.ability.extra.mult_mod } },
-                                    colour = G.C.MULT,
+                                    colour = G.C.FILTER,
                                     message_card = card
                                 }
                             end
@@ -131,6 +149,11 @@ SMODS.Joker {
             if pcard then
                 card.ability.extra.suit = pcard.base.suit
             end
+        end
+    end,
+    remove_from_deck = function(self, card, from_debuff)
+        if not from_debuff and not next(SMODS.find_card("j_repertorium_erika", true)) then
+            G.GAME.repertorium_hoehoe = nil
         end
     end,
     joker_display_def = function(JokerDisplay)
@@ -413,7 +436,7 @@ local erika_anim = {
 }
 
 local erika_anim_bg = {
-    [0] = "empty",
+    [-1] = "empty",
     [288] = "lava",
     [352] = "space",
     [416] = "lava",
@@ -423,6 +446,8 @@ local erika_anim_bg = {
     [608] = "empty",
     [640] = "poster",
     [672] = "empty",
+    [723] = "regular",
+    [858] = "empty",
     [988] = "lava",
     [1052] = "space",
     [1116] = "lava",
@@ -510,10 +535,180 @@ local erika_lyrics = {
     [2492] = { "", "" },
 }
 
+local function add_speech_bubble(self, text_key, align, loc_vars)
+    if self.children.speech_bubble then self.children.speech_bubble:remove() end
+    self.config.speech_bubble_align = { align = align or 'bm', offset = { x = 0, y = 0 }, parent = self }
+    self.children.speech_bubble =
+        UIBox {
+            definition = G.UIDEF.speech_bubble(text_key, loc_vars),
+            config = self.config.speech_bubble_align
+        }
+    self.children.speech_bubble:set_role {
+        role_type = 'Minor',
+        xy_bond = 'Weak',
+        r_bond = 'Strong',
+        major = self,
+    }
+    self.children.speech_bubble.states.visible = false
+end
+
+local function remove_speech_bubble(self)
+    if self.children.speech_bubble then
+        self.children.speech_bubble:remove(); self.children.speech_bubble = nil
+    end
+end
+
+local function say_stuff(self, n, not_first)
+    self.talking = true
+    if not not_first then
+        G.E_MANAGER:add_event(Event({
+            trigger = 'after',
+            delay = 0.1,
+            func = function()
+                if self.children.speech_bubble then self.children.speech_bubble.states.visible = true end
+                say_stuff(self, n, true)
+                return true
+            end
+        }))
+    else
+        if n <= 0 then
+            self.talking = false; return
+        end
+        local new_said = math.random(1, 11)
+        while new_said == self.last_said do
+            new_said = math.random(1, 11)
+        end
+        self.last_said = new_said
+        self:juice_up(0.1, 0.05)
+        G.E_MANAGER:add_event(Event({
+            trigger = 'after',
+            blockable = false,
+            blocking = false,
+            delay = 0.13,
+            func = function()
+                say_stuff(self, n - 1, true)
+                return true
+            end
+        }), 'tutorial')
+    end
+end
+
+local make_erika_say_stuff = function(sprite)
+    local _, card = next(SMODS.find_card("j_repertorium_erika", true))
+    if not card then return end
+    if sprite.frame_tick == 723 and sprite.say_stuff ~= 723 then
+        add_speech_bubble(card, "repertorium_erika_hoehoe_1", nil, { quip = true })
+        say_stuff(card, 3, false)
+
+        sprite.say_stuff = 723
+    end
+    if sprite.frame_tick == 766 and sprite.say_stuff ~= 766 then
+        add_speech_bubble(card, "repertorium_erika_hoehoe_2", nil, { quip = true })
+        say_stuff(card, 3, false)
+
+        sprite.say_stuff = 766
+    end
+    if sprite.frame_tick == 806 and sprite.say_stuff ~= 806 then
+        add_speech_bubble(card, "repertorium_erika_hoehoe_3", nil, { quip = true })
+        say_stuff(card, 3, false)
+
+        sprite.say_stuff = 806
+    end
+    if sprite.say_stuff and sprite.frame_tick >= 858 then
+        remove_speech_bubble(card)
+        sprite.say_stuff = nil
+    end
+end
+
+local joker_quips = {
+    "repertorium_erika_hoehoe_other_1",
+    "repertorium_erika_hoehoe_other_2",
+    "repertorium_erika_hoehoe_other_3",
+    "repertorium_erika_hoehoe_other_4",
+    "repertorium_erika_hoehoe_other_5",
+    "repertorium_erika_hoehoe_other_6",
+    "repertorium_erika_hoehoe_other_7",
+}
+
+local other_joker_quip = function(sprite)
+    local elegible = {}
+    for _, joker in ipairs(G.jokers.cards) do
+        if not joker.repertorium_hoehoe_quip and joker.config.center_key ~= "j_repertorium_erika" then
+            table.insert(elegible, joker)
+        end
+    end
+    local choice, _ = pseudorandom_element(elegible, "repertorium_hoehoe_quip_joker")
+    if choice then
+        local quips = {}
+        for _, quip in ipairs(joker_quips) do
+            if not sprite.said_quips[quip] then
+                table.insert(quips, quip)
+            end
+        end
+        if #quips <= 0 then
+            sprite.no_quips = true
+            return
+        end
+        local quip_choice = pseudorandom_element(quips, "repertorium_hoehoe_quip")
+        if quip_choice then
+            sprite.said_quips[quip_choice] = true
+            add_speech_bubble(choice, quip_choice, nil, { quip = true })
+            print(choice.config.center_key, quip_choice, nil, { quip = true })
+            say_stuff(choice, 0, true)
+            choice.repertorium_hoehoe_quip = true
+        end
+    end
+end
+
+local remove_all_quips = function(on_end)
+    for _, joker in ipairs(G.jokers.cards) do
+        if joker.repertorium_hoehoe_quip or joker.config.center_key == "j_repertorium_erika" then
+            remove_speech_bubble(joker)
+            if on_end then joker.repertorium_hoehoe_quip = nil end
+        end
+    end
+end
+
+local quip_frames = {
+    [1422] = true,
+    [1478] = true,
+    [1531] = true,
+    [1584] = true,
+    [1640] = true,
+    [1672] = true,
+    [1728] = true
+}
+
+local make_other_jokers_say_stuff = function(sprite)
+    if sprite.frame_tick == 1404 and not sprite.dance then
+        for _, joker in ipairs(G.jokers.cards) do
+            local func = function()
+                return G.GAME.repertorium_hoehoe and not NsRepertorium.hoehoe_stop_dance
+            end
+            juice_card_until(joker, func, true)
+        end
+
+        sprite.dance = true
+        sprite.said_quips = {}
+    end
+    if quip_frames[sprite.frame_tick] and sprite.other_quip ~= sprite.frame_tick then
+        remove_all_quips()
+        if not sprite.no_quips then
+            other_joker_quip(sprite)
+        end
+        sprite.other_quip = sprite.frame_tick
+    end
+    if sprite.frame_tick >= 1790 and sprite.dance then
+        NsRepertorium.hoehoe_stop_dance = true
+        remove_all_quips(on_end)
+    end
+end
+
 local hide_light_frame = 1403
 
 local function play_animation(sprite)
     local sound_pos = get_song_pos()
+    if not sound_pos then return end
     if sprite.sound_pos and sound_pos < sprite.sound_pos and sound_pos < 5 then
         local duration = get_song_duration()
         sprite.next_frame = sprite.next_frame - duration
@@ -521,23 +716,34 @@ local function play_animation(sprite)
     end
     sprite.sound_pos = sound_pos
     local pattern = erika_anim[sprite.current_pattern]
+
     if erika_lyrics[sprite.frame_tick] then
-        G.repertorium_erika_lyrics_eng = erika_lyrics[sprite.frame_tick][1]
-        G.repertorium_erika_lyrics_jp = erika_lyrics[sprite.frame_tick][2]
+        G.repertorium_erika_lyrics_next_eng = erika_lyrics[sprite.frame_tick][1]
+        if G.repertorium_erika_lyrics_next_eng == "" then
+            G.repertorium_erika_lyrics_eng = ""
+        end
+        G.repertorium_erika_lyrics_next_jp = erika_lyrics[sprite.frame_tick][2]
+        if G.repertorium_erika_lyrics_next_jp == "" then
+            G.repertorium_erika_lyrics_jp = ""
+        end
     end
+
+    make_erika_say_stuff(sprite)
+    make_other_jokers_say_stuff(sprite)
+
+    if erika_anim_bg[(sprite.frame_tick or 0) - 1] then
+        for _, joker in ipairs(SMODS.find_card("j_repertorium_erika")) do
+            joker.children.center:set_sprite_pos(erika_bg[erika_anim_bg[sprite.frame_tick - 1]])
+        end
+        sprite.current_bg = erika_anim_bg[sprite.frame_tick - 1]
+    end
+
     if sound_pos >= sprite.next_frame then
         sprite.next_frame = sprite.next_frame + 0.1
         sprite.frame_tick = sprite.frame_tick + 1
     end
-    for _, joker in ipairs(SMODS.find_card("j_repertorium_erika")) do
-        joker.children.center:set_sprite_pos(erika_bg[sprite.current_bg or "empty"])
-    end
     if sprite.current_frame <= #pattern and sound_pos >= sprite.next_time then
         local anim = pattern[sprite.current_frame]
-        --print(G.repertorium_erika_soul.total_frames)
-        if erika_anim_bg[sprite.total_frames] then
-            sprite.current_bg = erika_anim_bg[sprite.total_frames]
-        end
 
         if sprite.frame_tick >= hide_light_frame then
             sprite.hide_light = true
@@ -579,10 +785,184 @@ local function play_animation(sprite)
     end
 end
 
+local create_lyrics_box = function()
+    local make_text_row = function(ref, align, font)
+        return {
+            n = G.UIT.R,
+            config = { align = align },
+            nodes = {
+                {
+                    n = G.UIT.O,
+                    config = {
+                        object = DynaText({
+                            string = { { ref_table = G, ref_value = ref } },
+                            colours = { HEX("FFFFFF") },
+                            scale = 0.4,
+                            font = font
+                        }),
+                    }
+                },
+            }
+        }
+    end
+    local eng_row = make_text_row("repertorium_erika_lyrics_eng", "cl")
+    local jp_row = make_text_row("repertorium_erika_lyrics_jp", "cr", G.FONTS[5])
+    local next_eng_row = make_text_row("repertorium_erika_lyrics_next_eng", "cl")
+    local next_jp_row = make_text_row("repertorium_erika_lyrics_next_jp", "cr", G.FONTS[5])
+
+    local make_box = function(_eng_row, _jp_row)
+        return {
+            n = G.UIT.C,
+            config = { align = 'cm', colour = HEX("000000"), minw = G.jokers.T.w, minh = 1.2, padding = 0.1 },
+            nodes = {
+                {
+                    n = G.UIT.R,
+                    config = { align = 'cl' },
+                    nodes = {
+                        {
+                            n = G.UIT.C,
+                            config = { align = 'cl', minw = G.jokers.T.w - 2, minh = 0.6, padding = 0.1 },
+                            nodes = {
+                                _eng_row
+                            }
+                        }
+                    }
+                },
+                {
+                    n = G.UIT.R,
+                    config = { align = 'cr' },
+                    nodes = {
+                        {
+                            n = G.UIT.C,
+                            config = { align = 'cr', minw = G.jokers.T.w - 2, minh = 0.6, padding = 0.1 },
+                            nodes = {
+                                _jp_row
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    end
+    local definition = {
+        make_box(eng_row, jp_row),
+        make_box(next_eng_row, next_jp_row),
+    }
+
+    local config = {
+        align = 'cmi',
+        offset = { x = 0, y = 2 },
+        major = G.jokers,
+        bond = 'Weak',
+        instance_type = "MOVEABLE"
+    }
+
+    local text_object = SMODS.UIScrollBox({
+        content = {
+            definition = {
+                n = G.UIT.ROOT,
+                config = { colour = G.C.CLEAR },
+                nodes = {
+                    {
+                        n = G.UIT.C,
+                        config = { align = "cm" },
+                        nodes = definition,
+                    },
+                },
+            },
+            config = { align = "cm" },
+        },
+        container = {
+            config = {
+                can_collide = false,
+            }
+        },
+        overflow = {
+            node_config = {
+                no_overflow = "h",
+                w = G.jokers.T.w,
+            },
+            config = {
+                can_collide = false,
+            }
+        },
+        sync_mode = "offset",
+        scroll_move = function(self, dt)
+            if G.repertorium_erika_lyrics_next_eng and G.repertorium_erika_lyrics_next_eng ~= "" then
+                self.stored_dt = (self.stored_dt or 0) + G.real_dt
+                if self.stored_dt > 0.002 then
+                    self.scroll_offset.x = math.min((self.scroll_offset.x or 0) + 0.1, G.jokers.T.w)
+                    if self.scroll_offset.x >= G.jokers.T.w then
+                        self.scroll_offset.x = 0
+                        G.repertorium_erika_lyrics_eng = G.repertorium_erika_lyrics_next_eng
+                        G.repertorium_erika_lyrics_jp = G.repertorium_erika_lyrics_next_jp
+                        G.repertorium_erika_lyrics_next_eng = ""
+                        G.repertorium_erika_lyrics_next_jp = ""
+                    end
+                    self.stored_dt = 0
+                end
+            else
+                self.stored_dt = 0
+            end
+        end,
+    })
+
+    local uibox = UIBox {
+        definition = {
+            n = G.UIT.ROOT,
+            config = { colour = G.C.CLEAR },
+            nodes = {
+                {
+                    n = G.UIT.C,
+                    config = { align = "cm", padding = 0.05 },
+                    nodes = { {
+                        n = G.UIT.O,
+                        config = { object = text_object },
+                    } },
+                },
+            },
+        },
+        config = config
+    }
+    uibox.states.collide.can = false
+    return uibox
+end
+
+NsRepertorium.reset_hoehoe = function()
+    if not G.repertorium_erika_light then
+        G.repertorium_erika_light = Sprite(0, 0, G.CARD_W, G.CARD_H,
+            G.ASSET_ATLAS["repertorium_001erika_soul"], { x = 2, y = 0 })
+    end
+    if not G.repertorium_erika_soul then
+        G.repertorium_erika_soul = Sprite(0, 0, G.CARD_W, G.CARD_H,
+            G.ASSET_ATLAS["repertorium_001erika_soul"], { x = 0, y = 0 })
+    end
+    G.repertorium_erika_soul.current_frame = 1
+    G.repertorium_erika_soul.current_pattern = 1
+    G.repertorium_erika_soul.next_time = 0
+    G.repertorium_erika_soul.total_frames = 0
+    G.repertorium_erika_soul.frame_tick = 0
+    G.repertorium_erika_soul.next_frame = 0
+    G.repertorium_erika_soul.sound_pos = 0
+    G.repertorium_erika_soul:set_sprite_pos({ x = math.floor(G.TIMERS.REAL * 7) % 2, y = 0 })
+    G.repertorium_erika_soul:set_sprite_pos({ x = math.floor(G.TIMERS.REAL * 7) % 2, y = 0 })
+    G.repertorium_erika_lyrics_eng = ""
+    G.repertorium_erika_lyrics_jp = ""
+end
+
+local game_start_run_ref = Game.start_run
+function Game:start_run(args)
+    game_start_run_ref(self, args)
+    NsRepertorium.reset_hoehoe()
+end
+
 SMODS.DrawStep {
     key = 'repertorium_erika',
     order = 50,
     func = function(card)
+        if not G.GAME.repertorium_hoehoe and G.jokers and G.jokers.children.repertorium_lyrics_box then
+            G.jokers.children.repertorium_lyrics_box:remove()
+        end
         if card.config.center.key == "j_repertorium_erika" then
             if not G.repertorium_erika_light then
                 G.repertorium_erika_light = Sprite(0, 0, G.CARD_W, G.CARD_H,
@@ -593,17 +973,10 @@ SMODS.DrawStep {
                     G.ASSET_ATLAS["repertorium_001erika_soul"], { x = 0, y = 0 })
             end
 
+
             if not G.GAME.repertorium_hoehoe then
-                G.repertorium_erika_soul.current_frame = 1
-                G.repertorium_erika_soul.current_pattern = 1
-                G.repertorium_erika_soul.next_time = 0
-                G.repertorium_erika_soul.total_frames = 0
-                G.repertorium_erika_soul.frame_tick = 0
-                G.repertorium_erika_soul.next_frame = 0
-                G.repertorium_erika_soul.sound_pos = 0
+                NsRepertorium.reset_hoehoe()
                 card.children.center:set_sprite_pos(erika_bg.regular)
-                G.repertorium_erika_soul:set_sprite_pos({ x = math.floor(G.TIMERS.REAL * 7) % 2, y = 0 })
-                G.repertorium_erika_soul:set_sprite_pos({ x = math.floor(G.TIMERS.REAL * 7) % 2, y = 0 })
             else
                 if not G.repertorium_erika_soul.current_frame or not G.repertorium_erika_soul.next_time then
                     G.repertorium_erika_soul.current_frame = 1
@@ -614,84 +987,11 @@ SMODS.DrawStep {
                     G.repertorium_erika_soul.frame_tick = 0
                     G.repertorium_erika_soul.next_frame = 0
                     G.repertorium_erika_soul.sound_pos = 0
-                end
-                if not G.repertorium_lyrics_box then
                     G.repertorium_erika_lyrics_eng = ""
                     G.repertorium_erika_lyrics_jp = ""
-                    G.repertorium_lyrics_box = UIBox {
-                        definition = {
-                            n = G.UIT.ROOT,
-                            config = { align = 'cm', colour = HEX("000000"), minw = 8, minh = 1, padding = 0.1 },
-                            nodes = {
-                                {
-                                    n = G.UIT.C,
-                                    config = { align = "tl" },
-                                    nodes = {
-                                        {
-                                            n = G.UIT.R,
-                                            config = { align = "tl" },
-                                            nodes = {
-                                                {
-                                                    n = G.UIT.O,
-                                                    config = {
-                                                        object = DynaText {
-                                                            string = { { ref_table = G, ref_value = "repertorium_erika_lyrics_eng" } },
-                                                            scale = 0.4,
-                                                            colours = { HEX("FFFFFF") },
-                                                        },
-                                                    }
-                                                },
-                                            }
-                                        },
-                                        {
-                                            n = G.UIT.R,
-                                            config = { align = "tl" },
-                                            nodes = {
-                                                {
-                                                    n = G.UIT.B,
-                                                    config = { h = 0.5, w = 3 }
-                                                },
-                                            }
-                                        },
-                                    },
-                                },
-                                {
-                                    n = G.UIT.C,
-                                    config = { align = "br" },
-                                    nodes = {
-                                        {
-                                            n = G.UIT.R,
-                                            config = { align = "br" },
-                                            nodes = {
-                                                {
-                                                    n = G.UIT.B,
-                                                    config = { h = 0.5, w = 3 }
-                                                },
-                                            }
-                                        },
-                                        {
-                                            n = G.UIT.R,
-                                            config = { align = "br" },
-                                            nodes = {
-                                                {
-                                                    n = G.UIT.O,
-                                                    config = {
-                                                        object = DynaText {
-                                                            string = { { ref_table = G, ref_value = "repertorium_erika_lyrics_jp" } },
-                                                            scale = 0.4,
-                                                            colours = { HEX("FFFFFF") },
-                                                            font = G.FONTS[5]
-                                                        },
-                                                    }
-                                                },
-                                            }
-                                        },
-                                    },
-                                },
-                            }
-                        },
-                        config = { align = 'cmi', offset = { x = 0, y = 2 }, major = G.jokers, bond = 'Weak', instance_type = "CARD" }
-                    }
+                end
+                if G.jokers and not G.jokers.children.repertorium_lyrics_box then
+                    G.jokers.children.repertorium_lyrics_box = create_lyrics_box()
                 end
                 play_animation(G.repertorium_erika_soul)
                 if not G.repertorium_erika_soul.hide_light and G.repertorium_erika_soul.current_bg == "empty" then

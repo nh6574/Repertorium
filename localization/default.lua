@@ -323,6 +323,60 @@ return {
                 "without my song",
                 "and my friends!"
             },
+            repertorium_erika_hoehoe_1 = {
+                "Shizuka, Reika,",
+                "do you see now?",
+            },
+            repertorium_erika_hoehoe_2 = {
+                "To me, there is nothing",
+                "more precious than my song",
+                "and my friends"
+            },
+            repertorium_erika_hoehoe_3 = {
+                "I don't need",
+                "anything else",
+            },
+            repertorium_erika_hoehoe_other_1 = {
+                "If I may speak freely,",
+                "it is only a matter of time",
+                "until Erika becomes",
+                "the {C:attention}world's greatest idol{}!"
+            },
+            repertorium_erika_hoehoe_other_2 = {
+                "I'll say this much:",
+                "I'm already considering selling",
+                "{C:attention}Erika Manju",
+                "at my shop"
+            },
+            repertorium_erika_hoehoe_other_3 = {
+                "You're great, Erika!",
+                "If you were a firework,",
+                "you'd be the {C:attention}brightest",
+                "one in Japan!"
+            },
+            repertorium_erika_hoehoe_other_4 = {
+                "Just so you know,",
+                "I'm totally making an {C:attention}Erika Fan Club{}!",
+                "Nobody's taking the No.1 Fan",
+                "spot from me!"
+            },
+            repertorium_erika_hoehoe_other_5 = {
+                "Hmm...",
+                "Maybe I oughta make a",
+                "{C:attention}game{} about her?",
+            },
+            repertorium_erika_hoehoe_other_6 = {
+                "You better make some extra space",
+                "at your next concerts, 'cause",
+                "I'm bringing my {C:attention}gang",
+                "to cheer you on!"
+            },
+            repertorium_erika_hoehoe_other_7 = {
+                "I knew you had all the right",
+                "qualities when I first met you",
+                "This turned out {C:attention}perfectly{},",
+                "just like I thought!"
+            },
             repertorium_amanojaku_loss = {
                 "Ugh, they're getting stronger",
                 "Maybe I should try",
