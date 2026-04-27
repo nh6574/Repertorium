@@ -653,8 +653,7 @@ local other_joker_quip = function(sprite)
         if quip_choice then
             sprite.said_quips[quip_choice] = true
             add_speech_bubble(choice, quip_choice, nil, { quip = true })
-            print(choice.config.center_key, quip_choice, nil, { quip = true })
-            say_stuff(choice, 0, true)
+            say_stuff(choice, 0, false)
             choice.repertorium_hoehoe_quip = true
         end
     end
