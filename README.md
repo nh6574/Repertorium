@@ -7,7 +7,7 @@ Better enjoyed with [Blockbuster: Counters](https://github.com/icyethics/Blockbu
 ## Installation
 
 1. Install [Steamodded](https://github.com/Steamopollys/Steamodded) [(version >1.0.0)](https://github.com/Steamodded/smods/wiki)
-2. Download the [latest release](https://github.com/nh6574/JoyousSpring/releases)
+2. Download the [latest release](https://github.com/nh6574/Repertorium/releases)
 3. Extract the zip file into its own folder inside your Balatro mods folder (%appdata%\Balatro\Mods)
 
 ## Contact
